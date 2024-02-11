@@ -9,8 +9,6 @@ const syncedOptions = [
     'gradient_cards',
     'disable_color_overlay',
     'auto_dark',
-    'auto_dark_start',
-    'auto_dark_end',
     'num_assignments',
     'assignments_done',
     'assignment_date_format',
@@ -62,8 +60,6 @@ chrome.runtime.onInstalled.addListener(function () {
         "gradent_cards": false,
         "disable_color_overlay": false,
         "auto_dark": false,
-        "auto_dark_start": { "hour": "20", "minute": "00" },
-        "auto_dark_end": { "hour": "08", "minute": "00" },
         "num_assignments": 4,
         "custom_domain": [""],
         "assignments_done": [],
@@ -225,6 +221,12 @@ chrome.runtime.onInstalled.addListener(function () {
             }
 
             updateCSS(preset);
+
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                chrome.storage.sync.set({ dark_mode: true });
+            } else {
+                chrome.storage.sync.set({ dark_mode: false });
+            }
         });
     });
 });

@@ -87,8 +87,6 @@ function applyOptionsChanges(changes) {
                 toggleDarkMode();
                 break;
             case ("auto_dark"):
-            case ("auto_dark_start"):
-            case ("auto_dark_end"):
                 toggleAutoDarkMode();
                 break;
             case ("gradient_cards"):
@@ -726,24 +724,10 @@ function toggleDarkMode() {
 }
 
 function autoDarkModeCheck() {
-    let date = new Date();
-    let currentHour = date.getHours();
-    let currentMinute = date.getMinutes();
-    let status = false;
-    if (options.auto_dark === false) return;
-    let startHour = parseInt(options.auto_dark_start["hour"]);
-    let startMinute = parseInt(options.auto_dark_start["minute"]);
-    let endHour = parseInt(options.auto_dark_end["hour"]);
-    let endMinute = parseInt(options.auto_dark_end["minute"]);
-    if (currentHour === startHour) {
-        status = currentMinute >= startMinute;
-    } else if (currentHour === endHour) {
-        status = currentMinute <= endMinute;
-    } else if (startHour > endHour) {
-        status = currentHour > startHour || currentHour < endHour;
-    } else if (startHour < endHour) {
-        status = currentHour > startHour && currentHour < endHour;
-    }
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    console.log("BETTER-CANVAS: auto dark mode check " + prefersDarkScheme.matches);
+
+    let status = prefersDarkScheme.matches;
     if (options.auto_dark === true) {
         options.dark_mode = status;
         chrome.storage.local.set({ "dark_mode": status }, toggleDarkMode);
@@ -754,7 +738,7 @@ function toggleAutoDarkMode() {
     clearInterval(timeCheck);
     if (options.auto_dark && options.auto_dark === false) return;
     autoDarkModeCheck();
-    timeCheck = setInterval(autoDarkModeCheck, 60000);
+    timeCheck = setInterval(autoDarkModeCheck, 1000);
 }
 
 let iframeObserver;
